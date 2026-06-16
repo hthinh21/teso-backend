@@ -1,4 +1,10 @@
-import { Controller, Get, Param, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Param,
+  UseGuards,
+  ParseUUIDPipe,
+} from '@nestjs/common';
 import {
   ApiTags,
   ApiOperation,
@@ -54,7 +60,7 @@ export class RewardsController {
     status: 404,
     description: 'Không tìm thấy quà tặng với ID được cung cấp.',
   })
-  async findOne(@Param('id') id: string): Promise<Reward> {
+  async findOne(@Param('id', new ParseUUIDPipe()) id: string): Promise<Reward> {
     return this.rewardsService.findOne(id);
   }
 }

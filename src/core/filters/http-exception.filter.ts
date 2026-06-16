@@ -3,27 +3,39 @@ import {
   Catch,
   ArgumentsHost,
   HttpException,
+  HttpStatus,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
 
-@Catch(HttpException)
+@Catch()
 export class HttpExceptionFilter implements ExceptionFilter {
-  catch(exception: HttpException, host: ArgumentsHost) {
+  catch(exception: unknown, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
     const request = ctx.getRequest<Request>();
-    const status = exception.getStatus();
-    const exceptionResponse = exception.getResponse();
 
-    let message: string | string[] = exception.message;
+    let status = HttpStatus.INTERNAL_SERVER_ERROR;
+    let message: string | string[] = 'Internal server error';
 
-    if (typeof exceptionResponse === 'object' && exceptionResponse !== null) {
-      const resObj = exceptionResponse as Record<string, unknown>;
-      if (typeof resObj.message === 'string' || Array.isArray(resObj.message)) {
-        message = resObj.message as string | string[];
+    if (exception instanceof HttpException) {
+      status = exception.getStatus();
+      const exceptionResponse = exception.getResponse();
+
+      if (typeof exceptionResponse === 'object' && exceptionResponse !== null) {
+        const resObj = exceptionResponse as Record<string, unknown>;
+        if (
+          typeof resObj.message === 'string' ||
+          Array.isArray(resObj.message)
+        ) {
+          message = resObj.message as string | string[];
+        }
+      } else if (typeof exceptionResponse === 'string') {
+        message = exceptionResponse;
+      } else {
+        message = exception.message;
       }
-    } else if (typeof exceptionResponse === 'string') {
-      message = exceptionResponse;
+    } else if (exception instanceof Error) {
+      message = exception.message;
     }
 
     response.status(status).json({

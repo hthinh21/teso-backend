@@ -6,6 +6,8 @@ import {
   Param,
   Delete,
   UseGuards,
+  HttpCode,
+  HttpStatus,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -21,6 +23,7 @@ import { JwtAuthGuard } from '../../core/guards/jwt-auth.guard';
 import { RolesGuard } from '../../core/guards/roles.guard';
 import { Roles } from '../../core/decorators/roles.decorator';
 import { UserRole } from '../users/entities/user.entity';
+import { ParseUUIDPipe } from '@nestjs/common';
 
 @ApiTags('Admin Rewards Management')
 @ApiBearerAuth('JWT-auth')
@@ -85,22 +88,22 @@ export class RewardsAdminController {
     description: 'Không tìm thấy quà tặng với ID cần cập nhật.',
   })
   async update(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe()) id: string,
     @Body() updateRewardDto: UpdateRewardDto,
   ): Promise<Reward> {
     return this.rewardsService.update(id, updateRewardDto);
   }
 
   @Delete(':id')
+  @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({
     summary: 'Xóa một món quà khỏi hệ thống (Chỉ dành cho Admin)',
     description:
       'Xóa hoàn toàn quà tặng khỏi hệ thống. Tự động xóa cache danh sách và cache chi tiết quà trên Redis.',
   })
   @ApiResponse({
-    status: 200,
+    status: 204,
     description: 'Xóa quà tặng thành công.',
-    type: Reward,
   })
   @ApiResponse({
     status: 401,
@@ -114,7 +117,7 @@ export class RewardsAdminController {
     status: 404,
     description: 'Không tìm thấy quà tặng với ID cần xóa.',
   })
-  async remove(@Param('id') id: string): Promise<Reward> {
-    return this.rewardsService.remove(id);
+  async remove(@Param('id', new ParseUUIDPipe()) id: string): Promise<void> {
+    await this.rewardsService.remove(id);
   }
 }

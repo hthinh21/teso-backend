@@ -3,10 +3,11 @@ import {
   Post,
   Body,
   UseGuards,
-  Ip,
   HttpCode,
   HttpStatus,
+  Req,
 } from '@nestjs/common';
+import type { Request } from 'express';
 import {
   ApiTags,
   ApiOperation,
@@ -67,8 +68,11 @@ export class AuthController {
   })
   async login(
     @Body() loginDto: LoginDto,
-    @Ip() ip: string,
+    @Req() request: Request,
   ): Promise<{ accessToken: string; user: Omit<User, 'password'> }> {
+    const rawIp =
+      request.headers['x-forwarded-for'] || request.socket.remoteAddress || '';
+    const ip = Array.isArray(rawIp) ? rawIp[0] : rawIp;
     return this.authService.loginUser(loginDto, ip);
   }
 
@@ -78,7 +82,7 @@ export class AuthController {
   @ApiOperation({
     summary: 'Đăng nhập tài khoản Admin',
     description:
-      'Chỉ chấp nhận tài khoản có role là admin. Có cơ chế chặn bruteforce tương tự như đăng nhập user.',
+      'Chỉ chấp nhận tài khoản có role là admin. Có cơ chế chặn brute-force tương tự như đăng nhập user.',
   })
   @ApiResponse({
     status: 200,
@@ -93,8 +97,11 @@ export class AuthController {
   })
   async loginAdmin(
     @Body() loginDto: AdminLoginDto,
-    @Ip() ip: string,
+    @Req() request: Request,
   ): Promise<{ accessToken: string; user: Omit<User, 'password'> }> {
+    const rawIp =
+      request.headers['x-forwarded-for'] || request.socket.remoteAddress || '';
+    const ip = Array.isArray(rawIp) ? rawIp[0] : rawIp;
     return this.authService.loginAdmin(loginDto, ip);
   }
 }
