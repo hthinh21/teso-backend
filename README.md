@@ -11,7 +11,7 @@
 
 ---
 
-## 🛠 Công nghệ sử dụng
+## Công nghệ sử dụng
 
 * **Framework:** NestJS (v11)
 * **Database:** PostgreSQL (v16) + TypeORM
@@ -95,7 +95,7 @@ Sau khi khởi động server thành công, truy cập giao diện kiểm thử 
 * `POST /api/v1/auth/login` - Đăng nhập tài khoản User (Có rate limit).
 * `POST /api/v1/auth/admin/login` - Đăng nhập Admin (Có rate limit, yêu cầu role `admin`).
 
-#### 👤 Users Profile
+#### Users Profile
 * `GET /api/v1/users/profile` - Xem thông tin cá nhân của User đang đăng nhập (Yêu cầu JWT Token).
 
 #### Rewards (Quà tặng)
