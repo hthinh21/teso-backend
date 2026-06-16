@@ -17,6 +17,7 @@ import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { AdminLoginDto } from './dto/admin-login.dto';
+import { UserResponseDto } from '../users/dto/user-response.dto';
 import { LoginRateLimitGuard } from './guards/login-rate-limit.guard';
 import { User } from '../users/entities/user.entity';
 
@@ -30,6 +31,7 @@ export class AuthController {
   @ApiResponse({
     status: 201,
     description: 'Đăng ký tài khoản thành công.',
+    type: UserResponseDto,
   })
   @ApiResponse({
     status: 400,
@@ -39,8 +41,9 @@ export class AuthController {
     status: 409,
     description: 'Địa chỉ email đã tồn tại trên hệ thống.',
   })
-  async register(@Body() registerDto: RegisterDto): Promise<User> {
-    return this.authService.register(registerDto);
+  async register(@Body() registerDto: RegisterDto): Promise<UserResponseDto> {
+    const user = await this.authService.register(registerDto);
+    return UserResponseDto.fromEntity(user);
   }
 
   @Post('login')

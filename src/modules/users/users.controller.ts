@@ -8,7 +8,7 @@ import {
 import { UsersService } from './users.service';
 import { JwtAuthGuard } from '../../core/guards/jwt-auth.guard';
 import { GetUser } from '../../core/decorators/get-user.decorator';
-import { User } from './entities/user.entity';
+import { UserResponseDto } from './dto/user-response.dto';
 
 @ApiTags('Users')
 @ApiBearerAuth('JWT-auth')
@@ -22,12 +22,14 @@ export class UsersController {
   @ApiResponse({
     status: 200,
     description: 'Lấy thông tin thành công.',
+    type: UserResponseDto,
   })
   @ApiResponse({
     status: 401,
     description: 'Token xác thực không hợp lệ hoặc đã hết hạn.',
   })
-  async getProfile(@GetUser('id') userId: string): Promise<User> {
-    return this.usersService.findById(userId);
+  async getProfile(@GetUser('id') userId: string): Promise<UserResponseDto> {
+    const user = await this.usersService.findById(userId);
+    return UserResponseDto.fromEntity(user);
   }
 }
