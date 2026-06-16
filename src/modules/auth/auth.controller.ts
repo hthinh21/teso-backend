@@ -59,7 +59,7 @@ export class AuthController {
     description: 'Đăng nhập thành công, trả về Access Token.',
   })
   @ApiResponse({
-    status: 401,
+    status: 400,
     description: 'Email hoặc mật khẩu không chính xác.',
   })
   @ApiTooManyRequestsResponse({
@@ -85,12 +85,8 @@ export class AuthController {
     description: 'Đăng nhập thành công, trả về Access Token.',
   })
   @ApiResponse({
-    status: 401,
+    status: 400,
     description: 'Email hoặc mật khẩu không chính xác.',
-  })
-  @ApiResponse({
-    status: 403,
-    description: 'Tài khoản hoặc mật khẩu không chính xác.',
   })
   @ApiTooManyRequestsResponse({
     description: 'Tài khoản bị khóa tạm thời 15 phút do nhập sai nhiều lần.',

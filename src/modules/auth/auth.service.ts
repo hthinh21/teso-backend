@@ -1,8 +1,4 @@
-import {
-  Injectable,
-  UnauthorizedException,
-  ForbiddenException,
-} from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '../users/users.service';
 import { AuthCacheService } from './auth-cache.service';
@@ -32,7 +28,7 @@ export class AuthService {
 
     if (!user || !(await bcrypt.compare(password, user.password))) {
       await this.authCacheService.registerFailedAttempt(ip, email);
-      throw new UnauthorizedException('Email hoặc mật khẩu không chính xác');
+      throw new BadRequestException('Email hoặc mật khẩu không chính xác');
     }
 
     await this.authCacheService.resetAttempts(ip, email);
@@ -55,22 +51,18 @@ export class AuthService {
     const { email, password } = loginDto;
     const user = await this.usersService.findByEmail(email);
 
-    if (!user || !(await bcrypt.compare(password, user.password))) {
+    if (
+      !user ||
+      !(await bcrypt.compare(password, user.password)) ||
+      user.role !== UserRole.ADMIN
+    ) {
       await this.authCacheService.registerFailedAttempt(ip, email);
-      throw new UnauthorizedException('Email hoặc mật khẩu không chính xác');
+      throw new BadRequestException('Email hoặc mật khẩu không chính xác');
     }
-
-    if (user.role !== UserRole.ADMIN) {
-      throw new ForbiddenException('Tài khoản hoặc mật khẩu không chính xác');
-    }
-
     await this.authCacheService.resetAttempts(ip, email);
-
     const accessToken = this.generateToken(user);
-
     const userWithoutPassword = { ...user } as Partial<User>;
     delete userWithoutPassword.password;
-
     return {
       accessToken,
       user: userWithoutPassword as Omit<User, 'password'>,
