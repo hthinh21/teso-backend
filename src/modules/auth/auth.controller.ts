@@ -1,4 +1,12 @@
-import { Controller, Post, Body, UseGuards, Ip } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  UseGuards,
+  Ip,
+  HttpCode,
+  HttpStatus,
+} from '@nestjs/common';
 import {
   ApiTags,
   ApiOperation,
@@ -8,6 +16,7 @@ import {
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
+import { AdminLoginDto } from './dto/admin-login.dto';
 import { LoginRateLimitGuard } from './guards/login-rate-limit.guard';
 import { User } from '../users/entities/user.entity';
 
@@ -36,6 +45,7 @@ export class AuthController {
 
   @Post('login')
   @UseGuards(LoginRateLimitGuard)
+  @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Đăng nhập tài khoản User',
     description:
@@ -61,6 +71,7 @@ export class AuthController {
 
   @Post('admin/login')
   @UseGuards(LoginRateLimitGuard)
+  @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Đăng nhập tài khoản Admin',
     description:
@@ -82,7 +93,7 @@ export class AuthController {
     description: 'Tài khoản bị khóa tạm thời 15 phút do nhập sai nhiều lần.',
   })
   async loginAdmin(
-    @Body() loginDto: LoginDto,
+    @Body() loginDto: AdminLoginDto,
     @Ip() ip: string,
   ): Promise<{ accessToken: string; user: Omit<User, 'password'> }> {
     return this.authService.loginAdmin(loginDto, ip);
