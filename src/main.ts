@@ -8,19 +8,15 @@ import { TransformInterceptor } from './core/interceptors/transform.interceptor'
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  // Enable CORS
   app.enableCors();
 
-  // Set Global Prefix for all endpoints (except static/assets)
   app.setGlobalPrefix('api');
 
-  // Enable API Versioning natively (e.g., /api/v1/...)
   app.enableVersioning({
     type: VersioningType.URI,
     defaultVersion: '1',
   });
 
-  // Enable global validation pipes
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
@@ -28,13 +24,10 @@ async function bootstrap() {
     }),
   );
 
-  // Enable global exception filters
   app.useGlobalFilters(new HttpExceptionFilter());
 
-  // Enable global response transformation interceptors
   app.useGlobalInterceptors(new TransformInterceptor());
 
-  // Swagger API Documentation Setup
   const config = new DocumentBuilder()
     .setTitle('TESO Rewards System API')
     .setDescription('RESTful API TESO.')
