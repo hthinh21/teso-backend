@@ -1,17 +1,17 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEmail, IsString, MinLength, IsOptional } from 'class-validator';
 
-export class CreateUserDto {
+export class RegisterDto {
   @ApiProperty({
     example: 'user@example.com',
-    description: 'Địa chỉ email người dùng',
+    description: 'Địa chỉ email đăng ký tài khoản',
   })
   @IsEmail({}, { message: 'Email không đúng định dạng' })
   email: string;
 
   @ApiProperty({
     example: 'password123',
-    description: 'Mật khẩu bảo mật, tối thiểu 6 ký tự',
+    description: 'Mật khẩu đăng nhập, tối thiểu 6 ký tự',
   })
   @IsString()
   @MinLength(6, { message: 'Mật khẩu phải chứa ít nhất 6 ký tự' })
@@ -19,7 +19,7 @@ export class CreateUserDto {
 
   @ApiProperty({
     example: 'Thinh Do',
-    description: 'Họ và tên người dùng',
+    description: 'Họ và tên của người dùng',
     required: false,
   })
   @IsOptional()

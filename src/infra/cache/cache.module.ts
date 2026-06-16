@@ -16,7 +16,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
         });
         return {
           store: store,
-          ttl: 60, // Default TTL: 1 minute
+          ttl: 60,
         };
       },
     }),
