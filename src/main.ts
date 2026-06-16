@@ -8,7 +8,17 @@ import { TransformInterceptor } from './core/interceptors/transform.interceptor'
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  app.enableCors();
+  if (process.env.NODE_ENV === 'production') {
+    const allowedOrigins = process.env.ALLOWED_ORIGINS
+      ? process.env.ALLOWED_ORIGINS.split(',')
+      : [];
+    app.enableCors({
+      origin: allowedOrigins,
+      credentials: true,
+    });
+  } else {
+    app.enableCors();
+  }
 
   app.setGlobalPrefix('api');
 
