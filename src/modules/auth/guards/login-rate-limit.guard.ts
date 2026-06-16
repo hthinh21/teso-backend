@@ -15,17 +15,15 @@ export class LoginRateLimitGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest<Request>();
 
-    // Get client IP
     const rawIp =
       request.headers['x-forwarded-for'] || request.socket.remoteAddress || '';
     const ip = Array.isArray(rawIp) ? rawIp[0] : rawIp;
 
-    // Get login email safely from body without unsafe any member access
     const body = request.body as Record<string, unknown> | undefined;
     const email = body?.email as string | undefined;
 
     if (!email) {
-      return true; // Let validation pipe handle missing email
+      return true;
     }
 
     const isBlocked = await this.authCacheService.isBlocked(ip, email);

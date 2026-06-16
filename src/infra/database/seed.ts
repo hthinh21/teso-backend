@@ -1,11 +1,10 @@
 import dataSource from './data-source';
 import { User, UserRole } from '../../modules/users/entities/user.entity';
 import * as bcrypt from 'bcrypt';
+import { Logger } from '@nestjs/common';
 
 async function seed() {
-  console.log('Connecting to database...');
   await dataSource.initialize();
-  console.log('Database initialized.');
 
   const userRepository = dataSource.getRepository(User);
 
@@ -17,9 +16,8 @@ async function seed() {
   });
 
   if (existingAdmin) {
-    console.log(`Admin account with email "${adminEmail}" already exists.`);
+    Logger.log('Admin user already exists. Skipping seeding.');
   } else {
-    console.log(`Creating admin account "${adminEmail}"...`);
     const hashedPassword = await bcrypt.hash(adminPassword, 10);
     const admin = userRepository.create({
       email: adminEmail,
@@ -29,16 +27,11 @@ async function seed() {
       points: 9999,
     });
     await userRepository.save(admin);
-    console.log('Admin account created successfully!');
-    console.log(`Email: ${adminEmail}`);
-    console.log(`Password: ${adminPassword}`);
   }
-
   await dataSource.destroy();
-  console.log('Database connection closed.');
 }
 
 seed().catch((err) => {
-  console.error('Error during seeding:', err);
+  Logger.error('Error during seeding:', err);
   process.exit(1);
 });

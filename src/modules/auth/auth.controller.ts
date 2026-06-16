@@ -87,7 +87,7 @@ export class AuthController {
   })
   @ApiResponse({
     status: 403,
-    description: 'Tài khoản không có quyền Admin.',
+    description: 'Tài khoản hoặc mật khẩu không chính xác.',
   })
   @ApiTooManyRequestsResponse({
     description: 'Tài khoản bị khóa tạm thời 15 phút do nhập sai nhiều lần.',

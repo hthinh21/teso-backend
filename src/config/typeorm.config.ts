@@ -13,7 +13,9 @@ export default registerAs(
     database: process.env.DB_DATABASE,
     entities: [path.join(__dirname, '/../**/*.entity{.ts,.js}')],
     synchronize: false,
-    migrations: [path.join(__dirname, '/../database/migrations/*{.ts,.js}')],
+    migrations: [
+      path.join(__dirname, '/../infra/database/migrations/*{.ts,.js}'),
+    ],
     migrationsRun: true,
     logging: process.env.NODE_ENV === 'development',
   }),

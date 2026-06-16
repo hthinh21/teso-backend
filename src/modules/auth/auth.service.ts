@@ -61,7 +61,7 @@ export class AuthService {
     }
 
     if (user.role !== UserRole.ADMIN) {
-      throw new ForbiddenException('Tài khoản không có quyền Admin');
+      throw new ForbiddenException('Tài khoản hoặc mật khẩu không chính xác');
     }
 
     await this.authCacheService.resetAttempts(ip, email);
